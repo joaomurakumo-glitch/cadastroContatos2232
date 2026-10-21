@@ -23,12 +23,18 @@ class ContatoController extends Controller
     //POST
     public function form(Request $request)
     {
+        $dados = $request->validate([
+            'nome' => ['required', 'string', 'max:255'],
+            'telefone' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'endereco' => ['required', 'string', 'max:255'],
+        ]);
+
         $contato = new Contato();
-        $contato->nome = $request->input('nome');
-        $contato->telefone = $request->input('telefone');
-        $contato->email = $request->input('email');
-        $contato->endereco = $request->input('endereco');
-        
+        $contato->nome = $dados['nome'];
+        $contato->telefone = $dados['telefone'];
+        $contato->email = $dados['email'];
+        $contato->endereco = $dados['endereco'];
         $contato->save(); //salva no banco de dados
 
         return redirect('/'); //redireciona a home
@@ -38,12 +44,8 @@ class ContatoController extends Controller
     public function delete($id)
     {
         //Busca o contato pelo id
-        $contato = Contato::find($id);
-
-        if($contato){
-            //Executa o comando de exclusão no banco
-            $contato->delete();
-        }
+        $contato = Contato::findOrFail($id);
+        $contato->delete();
 
         return redirect('/'); //retorna a home
     }
@@ -51,7 +53,7 @@ class ContatoController extends Controller
     public function edit($id)
     {
         //Busca o contato pelo id
-        $contato = Contato::find($id);
+        $contato = Contato::findOrFail($id);
 
         //Abre a view de edição com o registro buscado
         return view('edit', ['contato' => $contato]);
@@ -59,15 +61,21 @@ class ContatoController extends Controller
 
     public function update(Request $request, $id)
     {
-        //Busca o contato pelo id
-        $contato = Contato::find($id);
-        $contato->nome = $request->input('nome');
-        $contato->telefone = $request->input('telefone');
-        $contato->email = $request->input('email');
-        $contato->endereco = $request->input('endereco');
+        $dados = $request->validate([
+            'nome' => ['required', 'string', 'max:255'],
+            'telefone' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'endereco' => ['required', 'string', 'max:255'],
+        ]);
+
+        $contato = Contato::findOrFail($id);
+        $contato->nome = $dados['nome'];
+        $contato->telefone = $dados['telefone'];
+        $contato->email = $dados['email'];
+        $contato->endereco = $dados['endereco'];
         $contato->save();
 
         return redirect('/');
     }
-    
+
 }
